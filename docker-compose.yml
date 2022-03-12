@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  database:
+    container_name: db_node_project
+    image: mariadb
+    ports:
+      - "9206:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=7*Nodep369
+      - MYSQL_DATABASE=db_node_project
+    networks:
+        backend-net:
+            ipv4_address: 19.1.111.5
+  web:
+    build:    
+      context: ./
+      dockerfile: Dockerfile
+    container_name: node_project
+    restart: always
+    ports:
+      - 8001:8001
+    networks:
+        backend-net:
+            ipv4_address: 19.1.111.4
+    depends_on:
+      - database
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
+    env_file:
+      - .env
+
+networks:
+    backend-net:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 19.1.111.0/26
